@@ -96,12 +96,12 @@ fun BookOrbitTheme(
     }
     val baseDensity = LocalDensity.current
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
-    // On 10.3" Boox tablets like NoteAir2P (1404px @ 240dpi = 936dp), scale density so effective width
-    // is ~620dp while keeping 6" readers like Boox Go 6 (1072px @ 300dpi = 571dp) at 1.0x density.
-    val densityMultiplier = if (screenWidthDp > 620) screenWidthDp / 620f else 1.0f
+    // On 10.3" Boox tablets like NoteAir2P (1404px @ 240dpi = 936dp, 227 PPI), scale density so
+    // effective width is ~740dp (matching physical millimeter size of 300 PPI 6" Boox Go 6 at 571dp).
+    val densityMultiplier = if (screenWidthDp > 740) screenWidthDp / 740f else 1.0f
     val eInkDensity = Density(
         density = baseDensity.density * densityMultiplier,
-        fontScale = 1.05f,
+        fontScale = if (screenWidthDp > 740) 1.0f else 1.05f,
     )
     CompositionLocalProvider(LocalDensity provides eInkDensity) {
         MaterialTheme(
