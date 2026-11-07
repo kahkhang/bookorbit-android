@@ -63,7 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-private val PDF_BACKDROP = Color(0xFF20242A)
+private val PDF_BACKDROP = Color.White
 
 @Composable
 fun PdfReaderScreen(
@@ -73,7 +73,7 @@ fun PdfReaderScreen(
     val ui by vm.ui.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var chromeVisible by remember { mutableStateOf(true) }
+    var chromeVisible by remember { mutableStateOf(false) }
     var settingsVisible by remember { mutableStateOf(false) }
     var searchVisible by remember { mutableStateOf(false) }
     var jumpVisible by remember { mutableStateOf(false) }
@@ -223,7 +223,7 @@ private fun PdfContent(
         if (ui.settings.scrollMode == PdfReaderSettings.ScrollMode.CONTINUOUS) {
             PdfContinuous(core, ui, vm, widthPx, heightPx, onToggleChrome, onLink, onCopyText, onToggleZoom)
         } else {
-            PdfPaginated(core, ui, vm, widthPx, heightPx, onLink, onCopyText, onToggleZoom)
+            PdfPaginated(core, ui, vm, widthPx, heightPx, onToggleChrome, onLink, onCopyText, onToggleZoom)
         }
     }
 }
@@ -255,7 +255,7 @@ private fun PdfContinuous(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) { detectTapGestures(onTap = { onToggleChrome() }) },
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         items(ui.pageCount) { index ->
             Box(
@@ -273,6 +273,7 @@ private fun PdfContinuous(
                     onLink = onLink,
                     onLongPress = onCopyText,
                     onToggleZoom = onToggleZoom,
+                    onTapPage = { onToggleChrome() },
                 )
             }
         }
@@ -286,10 +287,12 @@ private fun PdfPaginated(
     vm: PdfReaderViewModel,
     widthPx: Int,
     heightPx: Int,
+    onToggleChrome: () -> Unit,
     onLink: (PdfLink) -> Unit,
     onCopyText: (Int) -> Unit,
     onToggleZoom: () -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     val items = remember(ui.pageCount, ui.settings.spread) {
         PdfLayout.spreadItems(ui.pageCount, ui.settings.spread)
     }
@@ -308,7 +311,10 @@ private fun PdfPaginated(
     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { item ->
         val pages = items.getOrElse(item) { listOf(0) }
         Box(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .pointerInput(Unit) { detectTapGestures(onTap = { onToggleChrome() }) },
             contentAlignment = Alignment.Center,
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -325,6 +331,21 @@ private fun PdfPaginated(
                         onLink = onLink,
                         onLongPress = onCopyText,
                         onToggleZoom = onToggleZoom,
+                        onTapPage = { x ->
+                            when {
+                                x < 0.25f -> scope.launch {
+                                    if (pagerState.currentPage > 0) {
+                                        pagerState.scrollToPage(pagerState.currentPage - 1)
+                                    }
+                                }
+                                x > 0.75f -> scope.launch {
+                                    if (pagerState.currentPage + 1 < items.size) {
+                                        pagerState.scrollToPage(pagerState.currentPage + 1)
+                                    }
+                                }
+                                else -> onToggleChrome()
+                            }
+                        },
                     )
                 }
             }

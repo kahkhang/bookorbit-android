@@ -38,6 +38,7 @@ fun PdfPageView(
     onLink: (PdfLink) -> Unit,
     onLongPress: (Int) -> Unit,
     onToggleZoom: () -> Unit,
+    onTapPage: (Float) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -69,7 +70,15 @@ fun PdfPageView(
                 detectTapGestures(
                     onLongPress = { onLongPress(index) },
                     onDoubleTap = { onToggleZoom() },
-                    onTap = { offset -> hitLink(links, offset, pageSize, renderWidth, rotation)?.let(onLink) },
+                    onTap = { offset ->
+                        val link = hitLink(links, offset, pageSize, renderWidth, rotation)
+                        if (link != null) {
+                            onLink(link)
+                        } else {
+                            val xFraction = (offset.x / dispWpx.toFloat().coerceAtLeast(1f)).coerceIn(0f, 1f)
+                            onTapPage(xFraction)
+                        }
+                    },
                 )
             },
     ) {
