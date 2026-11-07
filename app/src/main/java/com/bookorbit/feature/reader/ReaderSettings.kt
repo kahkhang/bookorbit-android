@@ -11,16 +11,16 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ReaderSettings(
-    val fontSize: Int = 16,
+    val fontSize: Int = 22,
     val lineHeight: Double = 1.5,
     val fontFamily: String? = null,
-    val maxColumnCount: Int = 2,
+    val maxColumnCount: Int = 1,
     val gap: Double = 0.05,
     val maxInlineSize: Int = 720,
     val maxBlockSize: Int = 1440,
     val justify: Boolean = true,
     val hyphenate: Boolean = true,
-    val isDark: Boolean = true,
+    val isDark: Boolean = false,
     val themeName: String = "default",
     val flow: String = "paginated", // "paginated" | "scrolled"
 )

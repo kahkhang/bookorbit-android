@@ -326,6 +326,23 @@ fun SettingsScreen(vm: SettingsViewModel = hiltViewModel()) {
             item { HorizontalDivider() }
             item { SectionHeader(stringResource(R.string.about)) }
             item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    OutlinedButton(
+                        onClick = {
+                            runCatching {
+                                appContext.startActivity(
+                                    android.content.Intent(android.provider.Settings.ACTION_SETTINGS).apply {
+                                        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    },
+                                )
+                            }
+                        },
+                    ) {
+                        Text("Open Android / Wi-Fi Settings")
+                    }
+                }
+            }
+            item {
                 SettingsRow(
                     title = stringResource(R.string.settings_app_version),
                     subtitle = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",

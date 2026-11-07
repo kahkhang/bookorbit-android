@@ -9,8 +9,11 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 // BookOrbit is dark-first (matching the web client), so the dark palette is the "native" one.
 // Every role the components read is set explicitly: anything left out falls back to Material's
@@ -90,16 +93,23 @@ fun BookOrbitTheme(
         darkTheme -> DarkColors
         else -> LightColors
     }
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = BookOrbitTypography,
-    ) {
-        // Surface establishes the app background and the default LocalContentColor (onBackground),
-        // so bare Text() renders in the foreground color instead of the Material default black.
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            content = content,
-        )
+    val baseDensity = LocalDensity.current
+    val eInkDensity = Density(
+        density = baseDensity.density * 1.22f,
+        fontScale = baseDensity.fontScale.coerceAtLeast(1.15f),
+    )
+    CompositionLocalProvider(LocalDensity provides eInkDensity) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = BookOrbitTypography,
+        ) {
+            // Surface establishes the app background and the default LocalContentColor (onBackground),
+            // so bare Text() renders in the foreground color instead of the Material default black.
+            Surface(
+                color = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground,
+                content = content,
+            )
+        }
     }
 }

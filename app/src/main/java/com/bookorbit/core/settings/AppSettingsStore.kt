@@ -53,7 +53,7 @@ class AppSettingsStore @Inject constructor(
     }
 
     val themeMode = context.appSettingsDataStore.data.map { prefs ->
-        prefs[themeModeKey]?.let { raw -> runCatching { ThemeMode.valueOf(raw) }.getOrNull() } ?: ThemeMode.SYSTEM
+        prefs[themeModeKey]?.let { raw -> runCatching { ThemeMode.valueOf(raw) }.getOrNull() } ?: ThemeMode.LIGHT
     }
 
     suspend fun setThemeMode(mode: ThemeMode) {

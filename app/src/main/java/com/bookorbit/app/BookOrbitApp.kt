@@ -1,5 +1,6 @@
 package com.bookorbit.app
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,6 +31,9 @@ private object AuthRoutes {
  */
 @Composable
 fun BookOrbitApp() {
+    // Prevent root Back press from ever exiting or minimizing BookOrbit when acting as the Home interface.
+    BackHandler(enabled = true) { }
+
     val rootVm: RootViewModel = hiltViewModel()
     val state by rootVm.state.collectAsStateWithLifecycle()
 

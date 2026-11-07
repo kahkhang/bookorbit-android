@@ -3,21 +3,26 @@ package com.bookorbit.feature.dashboard
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bookorbit.core.db.ReaderProgressDao
 import com.bookorbit.core.model.BookCard
 import com.bookorbit.core.model.ReadingGoalWidget
 import com.bookorbit.core.model.ReadingStreakWidget
 import com.bookorbit.core.model.ScrollerType
 import com.bookorbit.feature.browse.BrowseRepository
+import com.bookorbit.feature.downloads.DownloadsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repo: BrowseRepository,
+    private val downloads: DownloadsRepository,
+    private val progressDao: ReaderProgressDao,
 ) : ViewModel() {
 
     data class UiState(
@@ -59,6 +64,40 @@ class DashboardViewModel @Inject constructor(
             val reading = continueReading.await()
             val listening = continueListening.await()
             val recent = recentlyAdded.await()
+
+            if (failures == 3) {
+                val offlineCards = runCatching {
+                    downloads.downloads.first().map { entity ->
+                        val detail = downloads.cachedBook(entity.bookId)
+                        val fileId = detail?.files?.firstOrNull()?.id
+                        val pct = fileId?.let { progressDao.get(it)?.percentage }
+                        BookCard(
+                            id = entity.bookId,
+                            title = entity.title,
+                            authors = entity.authors.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+                            files = detail?.files.orEmpty(),
+                            readingProgress = pct,
+                            addedAt = entity.downloadedAt.toString(),
+                            hasCover = entity.coverLocalPath != null || detail?.coverSource != null,
+                        )
+                    }
+                }.getOrDefault(emptyList())
+
+                if (offlineCards.isNotEmpty()) {
+                    val inProgress = offlineCards.filter { (it.readingProgress ?: 0.0) > 0.0 }
+                    _ui.value = UiState(
+                        continueReading = inProgress.ifEmpty { listOf(offlineCards.first()) },
+                        continueListening = emptyList(),
+                        recentlyAdded = offlineCards,
+                        loading = false,
+                        error = false,
+                        streak = null,
+                        goal = null,
+                    )
+                    return@launch
+                }
+            }
+
             _ui.value = UiState(
                 reading,
                 listening,
