@@ -95,8 +95,8 @@ fun BookOrbitTheme(
     }
     val baseDensity = LocalDensity.current
     val eInkDensity = Density(
-        density = baseDensity.density * 1.22f,
-        fontScale = baseDensity.fontScale.coerceAtLeast(1.15f),
+        density = baseDensity.density,
+        fontScale = 1.05f,
     )
     CompositionLocalProvider(LocalDensity provides eInkDensity) {
         MaterialTheme(
