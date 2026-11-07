@@ -103,6 +103,20 @@ fun PdfReaderSettingsSheet(
                 )
             }
 
+            Label("Margins")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = settings.cropMargins,
+                    onClick = { onChange(settings.copy(cropMargins = true)) },
+                    label = { Text("Crop margins") },
+                )
+                FilterChip(
+                    selected = !settings.cropMargins,
+                    onClick = { onChange(settings.copy(cropMargins = false)) },
+                    label = { Text("Original") },
+                )
+            }
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.rotation), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Text("${settings.rotation}°", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(end = 8.dp))

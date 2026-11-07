@@ -62,7 +62,7 @@ object PdfLayout {
             PdfReaderSettings.ZoomMode.CUSTOM -> (baseWidthPx * settings.customScale).roundToInt()
             PdfReaderSettings.ZoomMode.FIT_PAGE -> {
                 val (_, h) = displayedSize(pageW, pageH, baseWidthPx, settings.rotation)
-                if (containerHeightPx <= 0 || h <= containerHeightPx) baseWidthPx
+                if (containerHeightPx <= 0 || h <= 0) baseWidthPx
                 else (baseWidthPx.toDouble() * containerHeightPx / h).roundToInt()
             }
         }

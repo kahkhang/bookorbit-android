@@ -51,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -313,6 +314,7 @@ private fun PdfPaginated(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .clipToBounds()
                 .verticalScroll(rememberScrollState())
                 .pointerInput(Unit) { detectTapGestures(onTap = { onToggleChrome() }) },
             contentAlignment = Alignment.Center,

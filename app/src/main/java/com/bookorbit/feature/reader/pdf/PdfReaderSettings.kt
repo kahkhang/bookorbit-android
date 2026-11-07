@@ -9,11 +9,12 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class PdfReaderSettings(
-    val scrollMode: ScrollMode = ScrollMode.CONTINUOUS,
+    val scrollMode: ScrollMode = ScrollMode.PAGINATED,
     val spread: Spread = Spread.NONE,
-    val zoomMode: ZoomMode = ZoomMode.FIT_WIDTH,
+    val zoomMode: ZoomMode = ZoomMode.FIT_PAGE,
     val customScale: Double = 1.0,
     val rotation: Int = 0, // 0 | 90 | 180 | 270, clockwise
+    val cropMargins: Boolean = true,
 ) {
     enum class ScrollMode { PAGINATED, CONTINUOUS }
 
