@@ -112,7 +112,7 @@ fun MainShell(
     val tabNav = rememberNavController()
     // Tablets, unfolded foldables and landscape phones: a navigation rail beats a bottom bar.
     val widthDp = LocalConfiguration.current.screenWidthDp
-    val wide = widthDp >= WIDE_BREAKPOINT_DP
+    val wide = false
     // The book pane beside a list (see TwoPane). It has its own back stack, so each book keeps its own
     // saved state and BookDetailViewModel finds its id exactly as it does in the full-screen route.
     val detailNav = rememberNavController()

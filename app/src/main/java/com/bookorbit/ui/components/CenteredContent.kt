@@ -26,6 +26,6 @@ fun CenteredContent(
     content: @Composable () -> Unit,
 ) {
     Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-        Box(Modifier.widthIn(max = maxWidth).fillMaxWidth().fillMaxHeight()) { content() }
+        Box(Modifier.fillMaxSize()) { content() }
     }
 }

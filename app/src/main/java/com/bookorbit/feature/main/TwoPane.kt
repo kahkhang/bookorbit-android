@@ -31,8 +31,7 @@ object TwoPane {
     )
 
     /** True when [route] should be drawn as list + detail at this window width. */
-    fun isActive(widthDp: Int, route: String?): Boolean =
-        widthDp >= TWO_PANE_BREAKPOINT_DP && route in LIST_ROUTES
+    fun isActive(widthDp: Int, route: String?): Boolean = false
 }
 
 /** What the detail pane shows before a book is chosen. */

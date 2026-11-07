@@ -218,8 +218,8 @@ private fun PdfContent(
     }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val widthPx = with(density) { maxWidth.roundToPx() }
-        val heightPx = with(density) { maxHeight.roundToPx() }
+        val widthPx = constraints.maxWidth
+        val heightPx = constraints.maxHeight
 
         if (ui.settings.scrollMode == PdfReaderSettings.ScrollMode.CONTINUOUS) {
             PdfContinuous(core, ui, vm, widthPx, heightPx, onToggleChrome, onLink, onCopyText, onToggleZoom)

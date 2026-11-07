@@ -11,6 +11,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
@@ -94,8 +95,12 @@ fun BookOrbitTheme(
         else -> LightColors
     }
     val baseDensity = LocalDensity.current
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
+    // On 10.3" Boox tablets like NoteAir2P (1404px @ 240dpi = 936dp), scale density so effective width
+    // is ~620dp while keeping 6" readers like Boox Go 6 (1072px @ 300dpi = 571dp) at 1.0x density.
+    val densityMultiplier = if (screenWidthDp > 620) screenWidthDp / 620f else 1.0f
     val eInkDensity = Density(
-        density = baseDensity.density,
+        density = baseDensity.density * densityMultiplier,
         fontScale = 1.05f,
     )
     CompositionLocalProvider(LocalDensity provides eInkDensity) {
